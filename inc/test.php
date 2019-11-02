@@ -1,77 +1,106 @@
 <?php
+/*
+ * PHP Techdegree Project 2: Build a Quiz App in PHP
+ *
+ * These comments are to help you get started.
+ * You may split the file and move the comments around as needed.
+ *
+ * You will find examples of formating in the index.php script.
+ * Make sure you update the index file to use this PHP script, and persist the users answers.
+ *
+ * For the questions, you may use:
+ *  1. PHP array of questions
+ *  2. json formated questions
+ *  3. auto generate questions
+ *
+ */
+
+
 /**
-* Start the session to keep track of questions and answers
-*/
+ * Start the session to keep track of questions and answers
+ */
 session_start();
 
 // Include questions
-include 'questions.php';
+include 'generate_questions.php';
 
 /**
-* Sets the total question variable $totalQ to 10 max
-*/
+ *  Sets the total question variable $totalQ to 10 max
+ */
 $totalQ = 10;
 
 // Keep track of which questions have been asked
 $questionNum = filter_input(INPUT_GET, 'q', FILTER_SANITIZE_NUMBER_INT);
-if(empty($questionNum)) {
-$questionNum = 1;
-}
-
-// Restart the counting once the number of questions answered is more than the total number of question
-if($questionNum > $totalQ) {
-header('location: index.php');
-exit;
+if (empty($questionNum)) {
+    $questionNum = 1;
+   
 }
 
 /**
-* Shows the current question the user is answering
-*
-* @param integer $questionNum
-* @param integer $totalQ
-* @return void
-*/
+ * If all questions have been asked and the link to retake the quiz is clicked,
+ * reload the quiz and restart the counting.
+ */
+if(isset($_GET['status'])) {
+    $status = $_GET['status'];
+    if($status === 'yes') {
+        session_destroy();
+        header('location: index.php');
+    }
+}
+
+
+//Check the form has been submitted
+if (isset($_POST['answer'])) {
+    // Set session variables if form has been submitted
+    $trackedAnswer = $_SESSION['answer'][$questionNum - 1] = filter_input(INPUT_POST, 'answer', FILTER_SANITIZE_NUMBER_INT);
+    $correctAnswer = $_SESSION['correct'][$questionNum - 1] = filter_input(INPUT_POST, 'correct', FILTER_SANITIZE_NUMBER_INT);
+}
+
+// Check if the Session totalScores variable is set, if not initialize it to 0
+if (!isset($_SESSION['totalScores'])) {
+    $_SESSION['totalScores'] = 0;
+}
+
+/**
+ * Shows the current question the user is answering
+ *
+ * @param integer $questionNum
+ * @param integer $totalQ
+ * @return void
+ */
 // Show which question they are on
-function currentQuestion(int $questionNum, int $totalQ) {
-echo "Question $questionNum of $totalQ";
+function currentQuestion(int $questionNum, int $totalQ)
+{
+    echo "Question $questionNum of $totalQ";
 }
+
 
 /**
-* Builds up the random question one at a time using each array item key to generate the random question
-*
-* @param array $questions
-* @return mixed $quizQuestions
-*/
-function showQuiz(array $questionItems, int $questionNum) {
-// Grab a random key from the second level array
-$randomKey = array_rand($questionItems);
+ * Displays the corrector incorrect toast when a user answers a question
+ *
+ * @param integer $submittedAnswer
+ * @param integer $realAnswer
+ * @return void
+ */
+function displayToast(int $submittedAnswer, int $realAnswer) {
+    if ($submittedAnswer === $realAnswer) {
+        // Toast Correct 
+        echo "Correct ";
 
-// Use the random key to select a random array element
-$el = $questionItems[$randomKey];
+        // Show score
+        echo ++$_SESSION['totalScores'];
+    } else {
 
-var_dump($el['leftAdder']);
-
-$answers = [];
-
-// Show random question
-$quizQuestion = "What is " . ($el['leftAdder']) . " + " . ($el['rightAdder']);
-
-// Setup all the answers
-$answer= $el['leftAdder'] + $el['rightAdder'];
-$answers[] = $answer;
-$answers[] = $answer + rand(5, 10);
-$answers[] = $answer - rand(2, 10);
-
-// Shuffle answer buttons
-shuffle($answers);
-
-$quizQuestion .= '<form action="index.php?q=';
-    $quizQuestion .= $questionNum + 1 . '" method="post">';
-    $quizQuestion .= '<input type="hidden" name="id" value="0" />';
-    $quizQuestion .= '<input type="submit" class="btn" name="answer" value="'. $answers[0] . '" />';
-    $quizQuestion .= '<input type="submit" class="btn" name="answer" value="' . $answers[1] . '" />';
-    $quizQuestion .= '<input type="submit" class="btn" name="answer" value="' . $answers[2] . '" />';
-    $quizQuestion .= '</form>';
-
-return $quizQuestion;
+        echo "Incorrect, please try again";
+    }
 }
+    
+
+
+
+// If all questions have been asked, give option to show score
+// else give option to move to next question
+
+
+
+
