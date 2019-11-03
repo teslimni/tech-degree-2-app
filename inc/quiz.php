@@ -1,3 +1,4 @@
+
 <?php
 /*
  * PHP Techdegree Project 2: Build a Quiz App in PHP
@@ -22,7 +23,7 @@
 session_start();
 
 // Include questions
-include 'questions.php';
+include 'generate_questions.php';
 
 /**
  *  Sets the total question variable $totalQ to 10 max
@@ -35,10 +36,29 @@ if (empty($questionNum)) {
     $questionNum = 1;
 }
 
-// Restart the counting once the number of questions answered is more than the total number of question
-if ($questionNum > $totalQ) {
-    header('location: index.php');
-    exit;
+/**
+ * If all questions have been asked and the link to retake the quiz is clicked,
+ * reload the quiz and restart the counting.
+ */
+if (isset($_GET['status'])) {
+    $status = filter_input(INPUT_GET, 'status', FILTER_SANITIZE_STRING);
+    if ($status === 'yes') {
+        session_destroy();
+        header('location: index.php');
+    }
+}
+
+
+//Check the form has been submitted
+if (isset($_POST['answer'])) {
+    // Set session variables if form has been submitted
+    $trackedAnswer = $_SESSION['answer'][$questionNum - 1] = filter_input(INPUT_POST, 'answer', FILTER_SANITIZE_NUMBER_INT);
+    $correctAnswer = $_SESSION['correct'][$questionNum - 1] = filter_input(INPUT_POST, 'correct', FILTER_SANITIZE_NUMBER_INT);
+}
+
+// Check if the Session totalScores variable is set, if not initialize it to 0
+if (!isset($_SESSION['totalScores'])) {
+    $_SESSION['totalScores'] = 0;
 }
 
 /**
@@ -54,82 +74,36 @@ function currentQuestion(int $questionNum, int $totalQ)
     echo "Question $questionNum of $totalQ";
 }
 
-// Grab a random key from the second level array
-$randomKey = array_rand($questions);
 
-// Use the random key to select a random array element
-$el = $questions[$randomKey];
-
-// Show random question
 /**
- * Builds the random quiz question
+ * Displays the corrector incorrect toast when a user answers a question
  *
- * @param int $el
- * @return string
+ * @param integer $submittedAnswer
+ * @param integer $realAnswer
+ * @return void
  */
-function askQuestion($el) {
-    $quizQuestion = "What is " . ($el['leftAdder']) . " + "  . ($el['rightAdder']);
-    return $quizQuestion;
-}
+function displayToast(int $submittedAnswer, int $realAnswer)
+{
+    if ($submittedAnswer === $realAnswer) {
+        // Toast Correct 
+        $toast = '';
+        $toast .= '<div class="toaster success">';
+        $toast .= 'Good job! That\'s correct!';
+        $toast .= '</div>';
+        
+        ++$_SESSION['totalScores'];
+        echo $toast;
+    } else {
+        $toast = '';
+        $toast .= '<div class="toaster danger">';
+        $toast .= 'Sorry, that is incorrect, try better next time!';
+        $toast .= '</div>';
 
-// Define correct answer to the quiz question
-$answer = $el['leftAdder'] + $el['rightAdder'];
-
-// Shuffle answers
-/**
- * Sets the correct answer and creates two wrong answers
- * This function creates the three answers including the correct one. Then it reshuffles the answers before returning the values as an array. 
- *
- * @param int $answer
- * @return array
- */
-function answerQuestion($answer) {
-    // Setup all the answers
-    if(isset($answer)) {
-        $answers[] = $answer;
-        $answers[] = $answer + rand(5, 10);
-        $answers[] = $answer - rand(2, 10);
+        echo $toast;
     }
-
-    // Shuffle answer buttons
-    shuffle($answers);
-
-    return $answers;
 }
-
-// Assign the value of answerQuestion function to a variable for ease of use.
-$submittedAns = answerQuestion($answer);
-
-print_r($submittedAns);
-
-/**
- * Check if form is submitted
- * Keep track of answers
- */
-
-if (isset($_POST['answer'])) {
-    // Set session variables
-    $trackedAnswer = $_SESSION['answer'][$questionNum -1] = filter_input(INPUT_POST, 'answer', FILTER_SANITIZE_NUMBER_INT);
-    $correctAnswer = $_SESSION['correct'][$questionNum -1] = filter_input(INPUT_POST, 'correct', FILTER_SANITIZE_NUMBER_INT);
-    echo "<pre>";
-    var_dump($trackedAnswer);
-    var_dump($correctAnswer);
-    echo "</pre>";
-}
-
-function displayToast($submittedAnswer, $realAnswer) {
-        if ($submittedAnswer === $realAnswer) {
-            echo "Correct";
-        } else {
-            echo "Incorrect, please try again";
-        }
-}
+    
 
 
 
-
-// If all questions have been asked, give option to show score
-// else give option to move to next question
-
-
-// Show score
+/
