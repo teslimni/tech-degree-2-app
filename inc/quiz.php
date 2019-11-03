@@ -102,8 +102,3 @@ function displayToast(int $submittedAnswer, int $realAnswer)
         echo $toast;
     }
 }
-    
-
-
-
-/
