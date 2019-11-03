@@ -96,7 +96,7 @@ function displayToast(int $submittedAnswer, int $realAnswer)
     } else {
         $toast = '';
         $toast .= '<div class="toaster danger">';
-        $toast .= 'Sorry, that is incorrect, try better next time!';
+        $toast .= 'Sorry! that is incorrect, try better next time!';
         $toast .= '</div>';
 
         echo $toast;
