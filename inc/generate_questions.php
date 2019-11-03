@@ -22,14 +22,6 @@ $answers[] = $answer - $secondIncorrectAnswer;
 shuffle($answers);
 
 // Build the quiz elements
+// Add question and answer to questions array
 $quizElements['question'] = $randQuestion;
 $quizElements['answers'] = $answers;
-
-    // echo "<pre>";
-    // var_dump($quizElements);
-    // echo "</pre>";
-
-
-
-
-// Add question and answer to questions array
