@@ -22,7 +22,7 @@
 session_start();
 
 // Include questions
-include 'generate_questions.php';
+include 'questions.php';
 
 /**
  *  Sets the total question variable $totalQ to 10 max
@@ -33,32 +33,12 @@ $totalQ = 10;
 $questionNum = filter_input(INPUT_GET, 'q', FILTER_SANITIZE_NUMBER_INT);
 if (empty($questionNum)) {
     $questionNum = 1;
-   
 }
 
-/**
- * If all questions have been asked and the link to retake the quiz is clicked,
- * reload the quiz and restart the counting.
- */
-if(isset($_GET['status'])) {
-    $status = $_GET['status'];
-    if($status === 'yes') {
-        session_destroy();
-        header('location: index.php');
-    }
-}
-
-
-//Check the form has been submitted
-if (isset($_POST['answer'])) {
-    // Set session variables if form has been submitted
-    $trackedAnswer = $_SESSION['answer'][$questionNum - 1] = filter_input(INPUT_POST, 'answer', FILTER_SANITIZE_NUMBER_INT);
-    $correctAnswer = $_SESSION['correct'][$questionNum - 1] = filter_input(INPUT_POST, 'correct', FILTER_SANITIZE_NUMBER_INT);
-}
-
-// Check if the Session totalScores variable is set, if not initialize it to 0
-if (!isset($_SESSION['totalScores'])) {
-    $_SESSION['totalScores'] = 0;
+// Restart the counting once the number of questions answered is more than the total number of question
+if ($questionNum > $totalQ) {
+    header('location: index.php');
+    exit;
 }
 
 /**
@@ -74,27 +54,80 @@ function currentQuestion(int $questionNum, int $totalQ)
     echo "Question $questionNum of $totalQ";
 }
 
+// Grab a random key from the second level array
+$randomKey = array_rand($questions);
+
+// Use the random key to select a random array element
+$el = $questions[$randomKey];
+
+// Show random question
+/**
+ * Builds the random quiz question
+ *
+ * @param int $el
+ * @return string
+ */
+function askQuestion($el)
+{
+    $quizQuestion = "What is " . ($el['leftAdder']) . " + "  . ($el['rightAdder']);
+    return $quizQuestion;
+}
+
+// Define correct answer to the quiz question
+$answer = $el['leftAdder'] + $el['rightAdder'];
+
+// Shuffle answers
+/**
+ * Sets the correct answer and creates two wrong answers
+ * This function creates the three answers including the correct one. Then it reshuffles the answers before returning the values as an array. 
+ *
+ * @param int $answer
+ * @return array
+ */
+function answerQuestion($answer)
+{
+    // Setup all the answers
+    if (isset($answer)) {
+        $answers[] = $answer;
+        $answers[] = $answer + rand(5, 10);
+        $answers[] = $answer - rand(2, 10);
+    }
+
+    // Shuffle answer buttons
+    shuffle($answers);
+
+    return $answers;
+}
+
+// Assign the value of answerQuestion function to a variable for ease of use.
+$submittedAns = answerQuestion($answer);
+
+print_r($submittedAns);
 
 /**
- * Displays the corrector incorrect toast when a user answers a question
- *
- * @param integer $submittedAnswer
- * @param integer $realAnswer
- * @return void
+ * Check if form is submitted
+ * Keep track of answers
  */
-function displayToast(int $submittedAnswer, int $realAnswer) {
+
+if (isset($_POST['answer'])) {
+    // Set session variables
+    $trackedAnswer = $_SESSION['answer'][$questionNum - 1] = filter_input(INPUT_POST, 'answer', FILTER_SANITIZE_NUMBER_INT);
+    $correctAnswer = $_SESSION['correct'][$questionNum - 1] = filter_input(INPUT_POST, 'correct', FILTER_SANITIZE_NUMBER_INT);
+    echo "<pre>";
+    var_dump($trackedAnswer);
+    var_dump($correctAnswer);
+    echo "</pre>";
+}
+
+function displayToast($submittedAnswer, $realAnswer)
+{
     if ($submittedAnswer === $realAnswer) {
-        // Toast Correct 
-        echo "Correct ";
-
-        // Show score
-        echo ++$_SESSION['totalScores'];
+        echo "Correct";
     } else {
-
         echo "Incorrect, please try again";
     }
 }
-    
+
 
 
 
@@ -102,5 +135,6 @@ function displayToast(int $submittedAnswer, int $realAnswer) {
 // else give option to move to next question
 
 
+// Show score
 
 

@@ -1,4 +1,4 @@
-<?php include 'inc/test.php'; ?>
+<?php include 'inc/quiz.php'; ?>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -12,32 +12,38 @@
 
 <body>
     <div class="container">
-        <div>
-            <?php
-            //Toast correct and incorrect answers
-                if ($questionNum > 1 ) { 
-                    displayToast($trackedAnswer, $correctAnswer); 
-                }
-            ?>
-        </div>
-        <?php if($questionNum <= $totalQ) : ?>
-        <div id="quiz-box">
-            <p class="breadcrumbs"><?php currentQuestion($questionNum, $totalQ); ?></p>
-            <p class="quiz"><?php echo $quizElements['question']; ?></p>
-            <form action="index.php?q=<?php echo $questionNum + 1; ?>" method="post">
-                <input type="hidden" name="correct" value="<?php echo $answer; ?>" />
-                <input type="submit" class="btn" name="answer" value="<?php echo $quizElements['answers'][0]; ?>" />
-                <input type="submit" class="btn" name="answer" value="<?php echo $quizElements['answers'][1]; ?>" />
-                <input type="submit" class="btn" name="answer" value="<?php echo $quizElements['answers'][2]; ?>" />
-            </form>
-        </div>
+        <?php
+        //Toast correct and incorrect answers for 2 seconds
+        if ($questionNum > 1) {
+            displayToast($trackedAnswer, $correctAnswer);
+        }
+        ?>
+        <?php if ($questionNum <= $totalQ) : ?>
+            <div id="quiz-box">
+                <p class="breadcrumbs"><?php currentQuestion($questionNum, $totalQ); ?></p>
+                <p class="quiz"><?php echo $quizElements['question']; ?></p>
+                <form action="index.php?q=<?php echo $questionNum + 1; ?>" method="post">
+                    <input type="hidden" name="correct" value="<?php echo $answer; ?>" />
+                    <input type="submit" class="btn" name="answer" value="<?php echo $quizElements['answers'][0]; ?>" />
+                    <input type="submit" class="btn" name="answer" value="<?php echo $quizElements['answers'][1]; ?>" />
+                    <input type="submit" class="btn" name="answer" value="<?php echo $quizElements['answers'][2]; ?>" />
+                </form>
+            </div>
         <?php else : ?>
-            <div>
-                <p>Your total score is <?php echo $_SESSION['totalScores']; ?></p>
-               <p>Retake quiz? <a href="index.php?status=yes">Yes</a></p>
+            <div class="quiz-result">
+                <!-- Show total score -->
+                <?php if ($_SESSION['totalScores'] > $totalQ) : ?>
+                    <p>Your total score is <?php echo $_SESSION['totalScores'] - 1 . '/' . $totalQ; ?></p>
+                <?php else : ?>
+                    <p>Your total score is <?php echo $_SESSION['totalScores'] . '/' . $totalQ; ?> </p>
+                <?php endif; ?>
+                <!-- If all questions have been asked, give option to retake the quiz -->
+                <p>Retake quiz? <a href="index.php?status=yes">Yes</a></p>
             </div>
         <?php endif; ?>
     </div>
+
+    <script src="inc/js/main.js"></script>
 </body>
 
 </html>
