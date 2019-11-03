@@ -91,7 +91,7 @@ function displayToast(int $submittedAnswer, int $realAnswer)
         $toast .= 'Good job! That\'s correct!';
         $toast .= '</div>';
         
-        ++$_SESSION['totalScores'];
+        $_SESSION['totalScores']++;
         echo $toast;
     } else {
         $toast = '';
