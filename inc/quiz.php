@@ -73,9 +73,8 @@ function currentQuestion(int $questionNum, int $totalQ)
     echo "Question $questionNum of $totalQ";
 }
 
-
 /**
- * Displays the corrector incorrect toast when a user answers a question
+ * Displays the correct or incorrect toast when a user answers a question
  *
  * @param integer $submittedAnswer
  * @param integer $realAnswer
