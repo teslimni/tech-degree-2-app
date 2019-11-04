@@ -34,6 +34,7 @@ $totalQ = 10;
 $questionNum = filter_input(INPUT_GET, 'q', FILTER_SANITIZE_NUMBER_INT);
 if (empty($questionNum)) {
     $questionNum = 1;
+    session_destroy();
 }
 
 /**
@@ -96,7 +97,9 @@ function displayToast(int $submittedAnswer, int $realAnswer)
     } else {
         $toast = '';
         $toast .= '<div class="toaster danger">';
-        $toast .= 'Sorry! that is incorrect, try better next time!';
+        $toast .= 'Sorry! that is incorrect! ';
+        $toast .= $realAnswer;
+        $toast .= ' is the correct answer';
         $toast .= '</div>';
 
         echo $toast;
