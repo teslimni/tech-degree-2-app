@@ -33,19 +33,18 @@
             <div class="quiz-result">
                 <!-- Show total score -->
                 <?php if ($_SESSION['totalScores'] > $totalQ) : ?>
+                    <!-- If the total score is greater than the total number of questions, minus 1. -->
                     <p>Your total score is <?php echo $_SESSION['totalScores'] - 1 . '/' . $totalQ; ?></p>
                     <!-- If all questions have been asked, give option to retake the quiz -->
                     <p>Would you like to retake quiz? <a href="index.php?status=yes">Yes</a></p>
                     <!-- Prevent the total score from incrementing on browser refresh -->
                     <?php $_SESSION['totalScores'] = null; ?>
-                    <?php exit; ?>
                 <?php else : ?>
                     <p>Your total score is <?php echo $_SESSION['totalScores'] . '/' . $totalQ; ?> </p>
                     <!-- If all questions have been asked, give option to retake the quiz -->
                     <p>Would you like to retake quiz? <a href="index.php?status=yes">Yes</a></p>
                     <!-- Prevent the total score from incrementing on browser refresh -->
                     <?php $_SESSION['totalScores'] = null; ?>
-                    <?php exit; ?>
                 <?php endif; ?>
             </div>
         <?php endif; ?>
