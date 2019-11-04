@@ -2,8 +2,8 @@
 // Loop for required number of questions
 $quizElements = [];
 // Get random numbers to add
-$leftAdder = rand(0, 100);
-$rightAdder = rand(0, 100);
+$leftAdder = rand(10, 100);
+$rightAdder = rand(30, 100);
 // Generate random questions
 $randQuestion = "What is {$leftAdder}  + {$rightAdder}";
 
