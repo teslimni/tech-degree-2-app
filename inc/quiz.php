@@ -16,7 +16,6 @@
  *
  */
 
-
 /**
  * Start the session to keep track of questions and answers
  */
@@ -49,8 +48,7 @@ if (isset($_GET['status'])) {
     }
 }
 
-
-//Check the form has been submitted
+// Check that the form has been submitted
 if (isset($_POST['answer'])) {
     // Set session variables if form has been submitted
     $trackedAnswer = $_SESSION['answer'][$questionNum - 1] = filter_input(INPUT_POST, 'answer', FILTER_SANITIZE_NUMBER_INT);
@@ -63,13 +61,13 @@ if (!isset($_SESSION['totalScores'])) {
 }
 
 /**
- * Shows the current question the user is answering
+ * Show which question they are on
  *
  * @param integer $questionNum
  * @param integer $totalQ
  * @return void
  */
-// Show which question they are on
+
 function currentQuestion(int $questionNum, int $totalQ)
 {
     echo "Question $questionNum of $totalQ";
